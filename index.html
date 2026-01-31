@@ -2,12 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="业绩汇总">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#1a73e8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>支行业绩日报汇总器</title>
     <script>
 /*! xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
@@ -467,9 +462,15 @@ function parseBranchReport(text) {
     m = text.match(/个人养老金\s*[：:]?\s*(\d+|x)\s*户/i);
     if (m) kpi.pension_account = parseInt2(m[1]);
 
-    // 社保卡
-    m = text.match(/(?<!电子)社保卡\s*[：:]?\s*(\d+|x)\s*户/i);
-    if (m) kpi.social_security_card = parseInt2(m[1]);
+    // 社保卡（排除"电子社保卡"，兼容不支持 lookbehind 的浏览器）
+    m = text.match(/社保卡\s*[：:]?\s*(\d+|x)\s*户/i);
+    if (m) {
+        const idx = text.search(/社保卡\s*[：:]?\s*(\d+|x)\s*户/i);
+        const prefix = text.slice(Math.max(0, idx - 2), idx);
+        if (!prefix.endsWith('电子')) {
+            kpi.social_security_card = parseInt2(m[1]);
+        }
+    }
 
     // 电子社保卡
     m = text.match(/电子社保卡\s*[：:]?\s*(\d+|x)\s*张/i);
@@ -698,14 +699,45 @@ function renderTable() {
 
 function copyText(id, btn) {
     const text = document.getElementById(id).textContent;
-    navigator.clipboard.writeText(text).then(() => {
-        btn.textContent = '已复制';
-        btn.classList.add('copied');
-        setTimeout(() => {
-            btn.textContent = '复制';
-            btn.classList.remove('copied');
-        }, 2000);
-    });
+
+    // 尝试现代 Clipboard API（需要 HTTPS）
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            showCopied(btn);
+        }).catch(() => {
+            fallbackCopy(text, btn);
+        });
+    } else {
+        fallbackCopy(text, btn);
+    }
+}
+
+function fallbackCopy(text, btn) {
+    // 降级方案：创建临时 textarea
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    textarea.style.top = '0';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+        document.execCommand('copy');
+        showCopied(btn);
+    } catch (e) {
+        alert('复制失败，请手动长按选择复制');
+    }
+    document.body.removeChild(textarea);
+}
+
+function showCopied(btn) {
+    btn.textContent = '已复制';
+    btn.classList.add('copied');
+    setTimeout(() => {
+        btn.textContent = '复制';
+        btn.classList.remove('copied');
+    }, 2000);
 }
 
 function clearAll() {
