@@ -359,8 +359,8 @@ function parseBranchReport(text) {
     let m = text.match(/信用卡进件\s*(\d+|x)\s*张/i);
     if (m) kpi.credit_card_submit = parseInt2(m[1]);
 
-    // 申激绑
-    m = text.match(/申激绑\s*(\d+|x)\s*户/i);
+    // 申激绑（兼容"申激"和"申激绑"两种写法）
+    m = text.match(/申激(?:绑)?\s*(\d+|x)\s*户/i);
     if (m) kpi.credit_card_bindactivate = parseInt2(m[1]);
 
     // 卡分期外呼
