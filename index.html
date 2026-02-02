@@ -684,56 +684,49 @@ function parseAndShow() {
 }
 
 function renderTable() {
-    const headers = [
-        { name: '支行', cls: '' },
-        { name: '进件', cls: 'th-credit' },
-        { name: '申激绑', cls: 'th-credit' },
-        { name: '卡分期笔', cls: 'th-credit' },
-        { name: '卡分期额', cls: 'th-credit' },
-        { name: '乐分易笔', cls: 'th-credit' },
-        { name: '乐分易额', cls: 'th-credit' },
-        { name: '汽车分期笔', cls: 'th-credit' },
-        { name: '汽车分期额', cls: 'th-credit' },
-        { name: '车险笔', cls: 'th-credit' },
-        { name: '车险额', cls: 'th-credit' },
-        { name: '聚合码', cls: 'th-credit' },
-        { name: '小蓝环', cls: 'th-credit' },
-        { name: '掌银', cls: 'th-net' },
-        { name: '慧识客', cls: 'th-net' },
-        { name: '微银行', cls: 'th-net' },
-        { name: '定期', cls: 'th-personal' },
-        { name: '行外新增', cls: 'th-personal' },
-        { name: '期交', cls: 'th-personal' },
-        { name: '趸交', cls: 'th-personal' },
-        { name: '代销', cls: 'th-personal' },
-        { name: '自营克', cls: 'th-personal' },
-        { name: '存金通', cls: 'th-personal' },
-        { name: '快e宝', cls: 'th-personal' },
-        { name: '基金', cls: 'th-personal' },
-        { name: '长辈悦享', cls: 'th-personal' },
-        { name: '时时付', cls: 'th-personal' },
-        { name: '农银法巴', cls: 'th-personal' },
-        { name: '养老开户', cls: 'th-personal' },
-        { name: '养老缴存', cls: 'th-personal' },
-        { name: '社保卡', cls: 'th-personal' },
-        { name: '电子社保', cls: 'th-personal' },
-        { name: '电子医保', cls: 'th-personal' },
-        { name: '三方绑卡', cls: 'th-personal' },
-        { name: '企微', cls: 'th-personal' }
+    const allHeaders = [
+        { name: '支行', cls: '', field: 'branch' },
+        { name: '进件', cls: 'th-credit', field: 'credit_card_submit' },
+        { name: '申激绑', cls: 'th-credit', field: 'credit_card_bindactivate' },
+        { name: '卡分期笔', cls: 'th-credit', field: 'card_installment_calls' },
+        { name: '卡分期额', cls: 'th-credit', field: 'card_installment_amount' },
+        { name: '乐分易笔', cls: 'th-credit', field: 'lefenyi_count' },
+        { name: '乐分易额', cls: 'th-credit', field: 'lefenyi_amount' },
+        { name: '汽车分期笔', cls: 'th-credit', field: 'car_installment_count' },
+        { name: '汽车分期额', cls: 'th-credit', field: 'car_installment_amount' },
+        { name: '车险笔', cls: 'th-credit', field: 'car_insurance_count' },
+        { name: '车险额', cls: 'th-credit', field: 'car_insurance_amount' },
+        { name: '聚合码', cls: 'th-credit', field: 'juhe_merchant' },
+        { name: '小蓝环', cls: 'th-credit', field: 'xiaolanhuan_new' },
+        { name: '掌银', cls: 'th-net', field: 'mobile_bank_register' },
+        { name: '慧识客', cls: 'th-net', field: 'huishike' },
+        { name: '微银行', cls: 'th-net', field: 'webank_follow' },
+        { name: '定期', cls: 'th-personal', field: 'fixed_deposit' },
+        { name: '行外新增', cls: 'th-personal', field: 'external_deposit' },
+        { name: '期交', cls: 'th-personal', field: 'insurance_periodic' },
+        { name: '趸交', cls: 'th-personal', field: 'insurance_single' },
+        { name: '代销', cls: 'th-personal', field: 'gold_consignment' },
+        { name: '自营克', cls: 'th-personal', field: 'gold_self' },
+        { name: '存金通', cls: 'th-personal', field: 'cunjintong_new' },
+        { name: '快e宝', cls: 'th-personal', field: 'kuaibao_new' },
+        { name: '基金', cls: 'th-personal', field: 'fund_sales' },
+        { name: '长辈悦享', cls: 'th-personal', field: 'wealth_elder' },
+        { name: '时时付', cls: 'th-personal', field: 'wealth_shishifu' },
+        { name: '农银法巴', cls: 'th-personal', field: 'wealth_other' },
+        { name: '养老开户', cls: 'th-personal', field: 'pension_account' },
+        { name: '养老缴存', cls: 'th-personal', field: 'pension_amount' },
+        { name: '社保卡', cls: 'th-personal', field: 'social_security_card' },
+        { name: '电子社保', cls: 'th-personal', field: 'e_social_security' },
+        { name: '电子医保', cls: 'th-personal', field: 'e_medical' },
+        { name: '三方绑卡', cls: 'th-personal', field: 'bindcard_bindactivate' },
+        { name: '企微', cls: 'th-personal', field: 'wecom_add' }
     ];
 
-    const fields = [
-        'branch',
-        'credit_card_submit', 'credit_card_bindactivate', 'card_installment_calls', 'card_installment_amount',
-        'lefenyi_count', 'lefenyi_amount', 'car_installment_count', 'car_installment_amount',
-        'car_insurance_count', 'car_insurance_amount', 'juhe_merchant', 'xiaolanhuan_new',
-        'mobile_bank_register', 'huishike', 'webank_follow',
-        'fixed_deposit', 'external_deposit', 'insurance_periodic', 'insurance_single',
-        'gold_consignment', 'gold_self', 'cunjintong_new', 'kuaibao_new', 'fund_sales',
-        'wealth_elder', 'wealth_shishifu', 'wealth_other',
-        'pension_account', 'pension_amount', 'social_security_card', 'e_social_security', 'e_medical',
-        'bindcard_bindactivate', 'wecom_add'
-    ];
+    // 过滤掉没有数据的列（支行列始终保留）
+    const headers = allHeaders.filter(h => {
+        if (h.field === 'branch') return true;
+        return parsedBranches.some(b => b[h.field] !== null && b[h.field] !== 0);
+    });
 
     let html = '<thead><tr>';
     headers.forEach((h, i) => {
@@ -744,9 +737,9 @@ function renderTable() {
 
     for (const b of parsedBranches) {
         html += '<tr>';
-        fields.forEach((f, i) => {
+        headers.forEach((h, i) => {
             const sticky = i === 0 ? ' sticky-col' : '';
-            const val = f === 'branch' ? (b[f] || '未识别') : (b[f] !== null ? b[f] : '-');
+            const val = h.field === 'branch' ? (b[h.field] || '未识别') : (b[h.field] !== null ? b[h.field] : '-');
             html += `<td class="${sticky}">${val}</td>`;
         });
         html += '</tr>';
@@ -754,9 +747,9 @@ function renderTable() {
 
     // 汇总行
     html += '<tr class="total">';
-    fields.forEach((f, i) => {
+    headers.forEach((h, i) => {
         const sticky = i === 0 ? ' sticky-col' : '';
-        const val = f === 'branch' ? aggregatedKpi.branch : (aggregatedKpi[f] !== null ? aggregatedKpi[f] : '-');
+        const val = h.field === 'branch' ? aggregatedKpi.branch : (aggregatedKpi[h.field] !== null ? aggregatedKpi[h.field] : '-');
         html += `<td class="${sticky}">${val}</td>`;
     });
     html += '</tr></tbody>';
@@ -817,28 +810,53 @@ function clearAll() {
 function exportExcel() {
     if (!parsedBranches.length) return;
 
-    const headers = [
-        '支行', '日期',
-        '信用卡进件', '申激绑', '卡分期笔数', '卡分期金额', '乐分易笔数', '乐分易金额',
-        '汽车分期笔数', '汽车分期金额', '车险分期笔数', '车险分期金额', '聚合码商户', '小蓝环新增',
-        '掌银注册', '慧识客', '微银行关注',
-        '定期存款', '行外定期新增', '期交', '趸交', '代销贵金属', '自营销售克', '存金通新签约',
-        '快e宝新开', '重点基金销售', '长辈悦享', '时时付天天利', '农银法巴',
-        '养老金开户', '养老金缴存', '社保卡', '电子社保卡', '电子医保', '三方绑卡', '企业微信'
+    const allColumns = [
+        { name: '支行', field: 'branch' },
+        { name: '日期', field: 'date' },
+        { name: '信用卡进件', field: 'credit_card_submit' },
+        { name: '申激绑', field: 'credit_card_bindactivate' },
+        { name: '卡分期笔数', field: 'card_installment_calls' },
+        { name: '卡分期金额', field: 'card_installment_amount' },
+        { name: '乐分易笔数', field: 'lefenyi_count' },
+        { name: '乐分易金额', field: 'lefenyi_amount' },
+        { name: '汽车分期笔数', field: 'car_installment_count' },
+        { name: '汽车分期金额', field: 'car_installment_amount' },
+        { name: '车险分期笔数', field: 'car_insurance_count' },
+        { name: '车险分期金额', field: 'car_insurance_amount' },
+        { name: '聚合码商户', field: 'juhe_merchant' },
+        { name: '小蓝环新增', field: 'xiaolanhuan_new' },
+        { name: '掌银注册', field: 'mobile_bank_register' },
+        { name: '慧识客', field: 'huishike' },
+        { name: '微银行关注', field: 'webank_follow' },
+        { name: '定期存款', field: 'fixed_deposit' },
+        { name: '行外定期新增', field: 'external_deposit' },
+        { name: '期交', field: 'insurance_periodic' },
+        { name: '趸交', field: 'insurance_single' },
+        { name: '代销贵金属', field: 'gold_consignment' },
+        { name: '自营销售克', field: 'gold_self' },
+        { name: '存金通新签约', field: 'cunjintong_new' },
+        { name: '快e宝新开', field: 'kuaibao_new' },
+        { name: '重点基金销售', field: 'fund_sales' },
+        { name: '长辈悦享', field: 'wealth_elder' },
+        { name: '时时付天天利', field: 'wealth_shishifu' },
+        { name: '农银法巴', field: 'wealth_other' },
+        { name: '养老金开户', field: 'pension_account' },
+        { name: '养老金缴存', field: 'pension_amount' },
+        { name: '社保卡', field: 'social_security_card' },
+        { name: '电子社保卡', field: 'e_social_security' },
+        { name: '电子医保', field: 'e_medical' },
+        { name: '三方绑卡', field: 'bindcard_bindactivate' },
+        { name: '企业微信', field: 'wecom_add' }
     ];
 
-    const fields = [
-        'branch', 'date',
-        'credit_card_submit', 'credit_card_bindactivate', 'card_installment_calls', 'card_installment_amount',
-        'lefenyi_count', 'lefenyi_amount', 'car_installment_count', 'car_installment_amount',
-        'car_insurance_count', 'car_insurance_amount', 'juhe_merchant', 'xiaolanhuan_new',
-        'mobile_bank_register', 'huishike', 'webank_follow',
-        'fixed_deposit', 'external_deposit', 'insurance_periodic', 'insurance_single',
-        'gold_consignment', 'gold_self', 'cunjintong_new', 'kuaibao_new', 'fund_sales',
-        'wealth_elder', 'wealth_shishifu', 'wealth_other',
-        'pension_account', 'pension_amount', 'social_security_card', 'e_social_security', 'e_medical',
-        'bindcard_bindactivate', 'wecom_add'
-    ];
+    // 过滤掉没有数据的列（支行和日期列始终保留）
+    const columns = allColumns.filter(col => {
+        if (col.field === 'branch' || col.field === 'date') return true;
+        return parsedBranches.some(b => b[col.field] !== null && b[col.field] !== 0);
+    });
+
+    const headers = columns.map(col => col.name);
+    const fields = columns.map(col => col.field);
 
     const data = [headers];
     for (const b of parsedBranches) {
