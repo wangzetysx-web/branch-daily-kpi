@@ -555,12 +555,26 @@ function splitReports(text) {
     if (matches.length === 0) {
         return text.trim() ? [text.trim()] : [];
     }
-    const results = [];
+
+    // 按支行名称分组，合并同一支行的多段内容
+    const branchParts = {};
     for (let i = 0; i < matches.length; i++) {
+        const branchName = matches[i][0];
         const start = matches[i].index;
         const end = i + 1 < matches.length ? matches[i + 1].index : text.length;
         const part = text.slice(start, end).trim();
-        if (part) results.push(part);
+        if (part) {
+            if (!branchParts[branchName]) {
+                branchParts[branchName] = [];
+            }
+            branchParts[branchName].push(part);
+        }
+    }
+
+    // 合并同一支行的内容
+    const results = [];
+    for (const branchName in branchParts) {
+        results.push(branchParts[branchName].join('\n'));
     }
     return results;
 }
