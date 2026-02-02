@@ -504,8 +504,8 @@ function parseBranchReport(text) {
     m = text.match(/时时付[\/／]?天天利销售[：:]?\s*([\d.]+|x)\s*万元/i);
     if (m) kpi.wealth_shishifu = parseNumber(m[1]);
 
-    // 其他农银或法巴销售
-    m = text.match(/其他农银或法巴销售[：:]?\s*([\d.]+|x)\s*万?/i);
+    // 其他农银或法巴销售（不跨行匹配，避免匹配到下一行序号）
+    m = text.match(/其他农银或法巴销售[：:]?[ \t]*([\d.]+|x)[ \t]*万/i);
     if (m) kpi.wealth_other = parseNumber(m[1]);
 
     // 个人养老金开户数
