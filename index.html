@@ -497,12 +497,8 @@ function parseBranchReport(text) {
     if (m) kpi.kuaibao_new = parseInt2(m[1]);
 
     // 重点基金销售
-    m = text.match(/重点基金销售[ \t]*([\d.]+|[x✕])[ \t]*万元?/i);
+    m = text.match(/(?:重点)?基金销售[ \t]*[：:]?[ \t]*([\d.]+|[x✕])[ \t]*万元?/i);
     if (m) kpi.fund_sales = parseNumber(m[1]);
-    if (!kpi.fund_sales) {
-        m = text.match(/基金销售[：:]?[ \t]*([\d.]+|[x✕])[ \t]*万元?/i);
-        if (m) kpi.fund_sales = parseNumber(m[1]);
-    }
 
     // 长辈悦享销售
     m = text.match(/长辈悦享销售[ \t]*([\d.]+|[x✕])[ \t]*万元?/i);
