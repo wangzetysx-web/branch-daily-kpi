@@ -303,7 +303,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 function parseNumber(text) {
     if (!text) return null;
     text = text.trim();
-    if (text.toLowerCase() === 'x') return 0;
+    if (/^[x✕]$/i.test(text)) return 0;
     text = text.replace(/－/g, '-').replace(/—/g, '-');
     const num = parseFloat(text);
     return isNaN(num) ? null : num;
@@ -387,151 +387,151 @@ function parseBranchReport(text) {
     kpi.date = bd.date;
 
     // 信用卡进件
-    let m = text.match(/信用卡进件\s*(\d+|x)\s*张/i);
+    let m = text.match(/信用卡进件\s*(\d+|[x✕])\s*张/i);
     if (m) kpi.credit_card_submit = parseInt2(m[1]);
 
     // 申激绑（兼容"申激"和"申激绑"两种写法）
-    m = text.match(/申激(?:绑)?\s*(\d+|x)\s*户/i);
+    m = text.match(/申激(?:绑)?\s*(\d+|[x✕])\s*户/i);
     if (m) kpi.credit_card_bindactivate = parseInt2(m[1]);
 
     // 卡分期外呼
-    m = text.match(/卡分期外呼\s*(\d+|x)\s*笔[，,]?\s*金额\s*([\d.]+|x)\s*万?元/i);
+    m = text.match(/卡分期外呼\s*(\d+|[x✕])\s*笔[，,]?\s*金额\s*([\d.]+|[x✕])\s*万?元/i);
     if (m) {
         kpi.card_installment_calls = parseInt2(m[1]);
         kpi.card_installment_amount = parseNumber(m[2]);
     }
 
     // 乐分易
-    m = text.match(/乐分易成功[ \t]*(\d+|x)[ \t]*笔[，,]?[ \t]*金额[ \t]*([\d.]+|x)[ \t]*万元?/i);
+    m = text.match(/乐分易成功[ \t]*(\d+|[x✕])[ \t]*笔[，,]?[ \t]*金额[ \t]*([\d.]+|[x✕])[ \t]*万元?/i);
     if (m) {
         kpi.lefenyi_count = parseInt2(m[1]);
         kpi.lefenyi_amount = parseNumber(m[2]);
     }
 
     // 汽车分期
-    m = text.match(/汽车分期办理[ \t]*(\d+|x)[ \t]*笔[，,]?[ \t]*金额[ \t]*([\d.]+|x)[ \t]*万元?/i);
+    m = text.match(/汽车分期办理[ \t]*(\d+|[x✕])[ \t]*笔[，,]?[ \t]*金额[ \t]*([\d.]+|[x✕])[ \t]*万元?/i);
     if (m) {
         kpi.car_installment_count = parseInt2(m[1]);
         kpi.car_installment_amount = parseNumber(m[2]);
     }
 
     // 车险分期
-    m = text.match(/车险分期[ \t]*(\d+|x)[ \t]*笔[，,]?[ \t]*金额[ \t]*([\d.]+|x)[ \t]*万元?/i);
+    m = text.match(/车险分期[ \t]*(\d+|[x✕])[ \t]*笔[，,]?[ \t]*金额[ \t]*([\d.]+|[x✕])[ \t]*万元?/i);
     if (m) {
         kpi.car_insurance_count = parseInt2(m[1]);
         kpi.car_insurance_amount = parseNumber(m[2]);
     }
 
     // 聚合码商户进件
-    m = text.match(/聚合码商户进件[ \t]*(\d+|x)[ \t]*户?/i);
+    m = text.match(/聚合码商户进件[ \t]*(\d+|[x✕])[ \t]*户?/i);
     if (m) kpi.juhe_merchant = parseInt2(m[1]);
 
     // 小蓝环存量激活
-    m = text.match(/(?:存量)?小蓝环(?:商户)?(?:布放)?激活[ \t]*(\d+|x)[ \t]*户?/i);
+    m = text.match(/(?:存量)?小蓝环(?:商户)?(?:布放)?激活[ \t]*(\d+|[x✕])[ \t]*户?/i);
     if (m) kpi.xiaolanhuan_activate = parseInt2(m[1]);
 
     // 小蓝环新增
-    m = text.match(/小蓝环新增[ \t]*(\d+|x)[ \t]*户?/i);
+    m = text.match(/小蓝环新增[ \t]*(\d+|[x✕])[ \t]*户?/i);
     if (m) kpi.xiaolanhuan_new = parseInt2(m[1]);
 
     // 掌银注册
-    m = text.match(/掌银注册[ \t]*(\d+|x)[ \t]*户?/i);
+    m = text.match(/掌银注册[ \t]*(\d+|[x✕])[ \t]*户?/i);
     if (m) kpi.mobile_bank_register = parseInt2(m[1]);
 
     // 慧识客
-    m = text.match(/慧识客完成[ \t]*(\d+|x)[ \t]*户?/i);
+    m = text.match(/慧识客完成[ \t]*(\d+|[x✕])[ \t]*户?/i);
     if (m) kpi.huishike = parseInt2(m[1]);
 
     // 山西微银行关注
-    m = text.match(/(?:山西)?微银行关注[ \t]*(\d+|x)[ \t]*户?/i);
+    m = text.match(/(?:山西)?微银行关注[ \t]*(\d+|[x✕])[ \t]*户?/i);
     if (m) kpi.webank_follow = parseInt2(m[1]);
 
     // 定期存款 + 行外定期新增
-    m = text.match(/定期存款[：: ][ \t]*([\d.\-－—]+|x)[ \t]*万元?[，,（(]?[ \t]*(?:不含外币[），)]?[ \t]*[，,]?[ \t]*)?其中[：:]?[ \t]*(?:行外(?:定期新增合计|吸[进金]))[ \t]*([\d.\-－—]+|x)[ \t]*万/i);
+    m = text.match(/定期存款[：: ][ \t]*([\d.\-－—]+|[x✕])[ \t]*万元?[，,（(]?[ \t]*(?:不含外币[），)]?[ \t]*[，,]?[ \t]*)?其中[：:]?[ \t]*(?:行外(?:定期新增合计|吸[进金]))[ \t]*([\d.\-－—]+|[x✕])[ \t]*万/i);
     if (m) {
         kpi.fixed_deposit = parseNumber(m[1]);
         kpi.external_deposit = parseNumber(m[2]);
     } else {
-        m = text.match(/定期存款[：:]?[ \t]*([\d.\-－—]+|x)[ \t]*万元?/i);
+        m = text.match(/定期存款[：:]?[ \t]*([\d.\-－—]+|[x✕])[ \t]*万元?/i);
         if (m) kpi.fixed_deposit = parseNumber(m[1]);
     }
 
     // 美元定期
-    m = text.match(/美元定期[ \t]*([\d.]+|x)[ \t]*万?美元/i);
+    m = text.match(/美元定期[ \t]*([\d.]+|[x✕])[ \t]*万?美元/i);
     if (m) kpi.usd_deposit = parseNumber(m[1]);
 
     // 期交
-    m = text.match(/期交[ \t]*([\d.]+|x)[ \t]*万元?/i);
+    m = text.match(/期交[ \t]*([\d.]+|[x✕])[ \t]*万元?/i);
     if (m) kpi.insurance_periodic = parseNumber(m[1]);
 
     // 趸交
-    m = text.match(/趸交[ \t]*([\d.]+|x)[ \t]*万元?/i);
+    m = text.match(/趸交[ \t]*([\d.]+|[x✕])[ \t]*万元?/i);
     if (m) kpi.insurance_single = parseNumber(m[1]);
 
     // 代销贵金属
-    m = text.match(/代销[ \t]*[：:]?[ \t]*([\d.]+|x)[ \t]*万元?/i);
+    m = text.match(/代销[ \t]*[：:]?[ \t]*([\d.]+|[x✕])[ \t]*万元?/i);
     if (m) kpi.gold_consignment = parseNumber(m[1]);
 
     // 自营黄金（克）
-    m = text.match(/自营(?:存金通\d*号\/?)?(?:自营)?黄金[ \t]*[：:]?[ \t]*([\d.]+|x)[ \t]*克?/i);
+    m = text.match(/自营(?:存金通\d*号\/?)?(?:自营)?黄金[ \t]*[：:]?[ \t]*([\d.]+|[x✕])[ \t]*克?/i);
     if (m) {
         kpi.gold_self = parseNumber(m[1]);
     } else {
-        m = text.match(/自营存金通\d*号[ \t]*([\d.]+|x)[ \t]*克?/i);
+        m = text.match(/自营存金通\d*号[ \t]*([\d.]+|[x✕])[ \t]*克?/i);
         if (m) kpi.gold_self = parseNumber(m[1]);
     }
 
     // 自营白银
-    m = text.match(/自营白银[ \t]*[：:]?[ \t]*([\d.]+|x)[ \t]*克?/i);
+    m = text.match(/自营白银[ \t]*[：:]?[ \t]*([\d.]+|[x✕])[ \t]*克?/i);
     if (m) kpi.silver_self = parseNumber(m[1]);
 
     // 存金通新签约
-    m = text.match(/存金通新签约[ \t]*[：:]?[ \t]*(\d+|x)[ \t]*户?/i);
+    m = text.match(/存金通新签约[ \t]*[：:]?[ \t]*(\d+|[x✕])[ \t]*户?/i);
     if (m) kpi.cunjintong_signup = parseInt2(m[1]);
     // 存金通金额
-    m = text.match(/存金通.*?([\d.]+|x)[ \t]*万/i);
+    m = text.match(/存金通.*?([\d.]+|[x✕])[ \t]*万/i);
     if (m) kpi.cunjintong_amount = parseNumber(m[1]);
 
     // 快e宝2号新开
-    m = text.match(/快e宝2号?新开(?:客?户数?)?[ \t]*[：:]?[ \t]*(\d+|x)[ \t]*户?/i);
+    m = text.match(/快e宝2号?新开(?:客?户数?)?[ \t]*[：:]?[ \t]*(\d+|[x✕])[ \t]*户?/i);
     if (m) kpi.kuaibao_new = parseInt2(m[1]);
 
     // 重点基金销售
-    m = text.match(/重点基金销售[ \t]*([\d.]+|x)[ \t]*万元?/i);
+    m = text.match(/重点基金销售[ \t]*([\d.]+|[x✕])[ \t]*万元?/i);
     if (m) kpi.fund_sales = parseNumber(m[1]);
     if (!kpi.fund_sales) {
-        m = text.match(/基金销售[：:]?[ \t]*([\d.]+|x)[ \t]*万元?/i);
+        m = text.match(/基金销售[：:]?[ \t]*([\d.]+|[x✕])[ \t]*万元?/i);
         if (m) kpi.fund_sales = parseNumber(m[1]);
     }
 
     // 长辈悦享销售
-    m = text.match(/长辈悦享销售[ \t]*([\d.]+|x)[ \t]*万元?/i);
+    m = text.match(/长辈悦享销售[ \t]*([\d.]+|[x✕])[ \t]*万元?/i);
     if (m) kpi.wealth_elder = parseNumber(m[1]);
 
     // 时时付/天天利销售
-    m = text.match(/(?:时时付|天天利)(?:[\/／](?:时时付|天天利))?(?:销售)?[：:]?[ \t]*([\d.]+|x)[ \t]*万元?/i);
+    m = text.match(/(?:时时付|天天利)(?:[\/／](?:时时付|天天利))?(?:销售)?[：:]?[ \t]*([\d.]+|[x✕])[ \t]*万元?/i);
     if (m) kpi.wealth_daily = parseNumber(m[1]);
 
     // 其他农银或法巴销售（不跨行匹配，避免匹配到下一行序号）
-    m = text.match(/其他农银或法巴销售[：:]?[ \t]*([\d.]+|x)[ \t]*万/i);
+    m = text.match(/其他农银或法巴销售[：:]?[ \t]*([\d.]+|[x✕])[ \t]*万/i);
     if (m) kpi.wealth_other = parseNumber(m[1]);
 
     // 个人养老金开户数
-    m = text.match(/开户数[：:][ \t]*(\d+|x)/i);
+    m = text.match(/开户数[：:][ \t]*(\d+|[x✕])/i);
     if (m) kpi.pension_account = parseInt2(m[1]);
     if (!kpi.pension_account) {
-        m = text.match(/个人养老金[ \t]*[：:]?[ \t]*(\d+|x)[ \t]*户/i);
+        m = text.match(/个人养老金[ \t]*[：:]?[ \t]*(\d+|[x✕])[ \t]*户/i);
         if (m) kpi.pension_account = parseInt2(m[1]);
     }
 
     // 个人养老金缴存金额
-    m = text.match(/缴存金额[：:][ \t]*([\d.]+|x)/i);
+    m = text.match(/缴存金额[：:][ \t]*([\d.]+|[x✕])/i);
     if (m) kpi.pension_amount = parseNumber(m[1]);
 
     // 社保卡（排除"电子社保卡"）
-    m = text.match(/社保卡[ \t]*[：:]?[ \t]*(\d+|x)[ \t]*[户张]?/i);
+    m = text.match(/社保卡[ \t]*[：:]?[ \t]*(\d+|[x✕])[ \t]*[户张]?/i);
     if (m) {
-        const idx = text.search(/社保卡[ \t]*[：:]?[ \t]*(\d+|x)/i);
+        const idx = text.search(/社保卡[ \t]*[：:]?[ \t]*(\d+|[x✕])/i);
         const prefix = text.slice(Math.max(0, idx - 2), idx);
         if (!prefix.endsWith('电子')) {
             kpi.social_security_card = parseInt2(m[1]);
@@ -539,19 +539,19 @@ function parseBranchReport(text) {
     }
 
     // 电子社保卡
-    m = text.match(/电子社保卡[：:]?[ \t]*(\d+|x)[ \t]*[张户]?/i);
+    m = text.match(/电子社保卡[：:]?[ \t]*(\d+|[x✕])[ \t]*[张户]?/i);
     if (m) kpi.e_social_security = parseInt2(m[1]);
 
     // 电子医保
-    m = text.match(/电子医保[：:]?[ \t]*(\d+|x)[ \t]*[张户]?/i);
+    m = text.match(/电子医保[：:]?[ \t]*(\d+|[x✕])[ \t]*[张户]?/i);
     if (m) kpi.e_medical = parseInt2(m[1]);
 
     // 三方绑卡
-    m = text.match(/三方绑卡[：:]?[ \t]*(\d+|x)/i);
+    m = text.match(/三方绑卡[：:]?[ \t]*(\d+|[x✕])/i);
     if (m) kpi.bindcard_bindactivate = parseInt2(m[1]);
 
     // 企业微信添加
-    m = text.match(/企业微信添加[：:]?[ \t]*(\d+|x)/i);
+    m = text.match(/企业微信添加[：:]?[ \t]*(\d+|[x✕])/i);
     if (m) kpi.wecom_add = parseInt2(m[1]);
 
     return kpi;
@@ -751,7 +751,7 @@ function renderTable() {
     // 过滤掉没有数据的列（支行列始终保留）
     const headers = allHeaders.filter(h => {
         if (h.field === 'branch') return true;
-        return parsedBranches.some(b => b[h.field] !== null && b[h.field] !== 0);
+        return parsedBranches.some(b => b[h.field] != null);
     });
 
     let html = '<thead><tr>';
