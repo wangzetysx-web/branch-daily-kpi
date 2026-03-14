@@ -516,13 +516,12 @@ function parseBranchReport(text) {
     m = text.match(/其他农银或法巴销售[：:]?[ \t]*([\d.]+|[x✕])[ \t]*万/i);
     if (m) kpi.wealth_other = parseNumber(m[1]);
 
-    // 个人养老金开户数
-    m = text.match(/开户数[：:][ \t]*(\d+|[x✕])/i);
-    if (m) kpi.pension_account = parseInt2(m[1]);
-    if (!kpi.pension_account) {
-        m = text.match(/个人养老金[ \t]*[：:]?[ \t]*(\d+|[x✕])[ \t]*户/i);
-        if (m) kpi.pension_account = parseInt2(m[1]);
+    // 个人养老金开户数（限定在"养老金"上下文内，避免匹配到快e宝的"开户数"）
+    m = text.match(/个人养老金[\s\S]{0,30}?开户数[：:][ \t]*(\d+|[x✕])/i);
+    if (!m) {
+        m = text.match(/个人养老金[ \t]*[：:]?[ \t]*(\d+|[x✕])[ \t]*[户个]/i);
     }
+    if (m) kpi.pension_account = parseInt2(m[1]);
 
     // 个人养老金缴存金额
     m = text.match(/缴存金额[：:][ \t]*([\d.]+|[x✕])/i);
