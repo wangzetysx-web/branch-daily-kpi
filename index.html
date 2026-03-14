@@ -270,17 +270,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         <div class="card">
             <h2 id="resultTitle">汇总结果</h2>
 
-            <h3>个金业绩汇总</h3>
             <div class="output-box" id="output1"></div>
             <button class="copy-btn" onclick="copyText('output1', this)">复制</button>
-
-            <h3>信用卡业绩</h3>
-            <div class="output-box" id="output2"></div>
-            <button class="copy-btn" onclick="copyText('output2', this)">复制</button>
-
-            <h3>网金业绩</h3>
-            <div class="output-box" id="output3"></div>
-            <button class="copy-btn" onclick="copyText('output3', this)">复制</button>
         </div>
 
         <div class="card">
@@ -391,7 +382,7 @@ function parseBranchReport(text) {
     if (m) kpi.credit_card_bindactivate = parseInt2(m[1]);
 
     // 卡分期外呼
-    m = text.match(/卡分期外呼\s*(\d+|x)\s*笔[，,]?\s*金额\s*([\d.]+|x)\s*万元/i);
+    m = text.match(/卡分期外呼\s*(\d+|x)\s*笔[，,]?\s*金额\s*([\d.]+|x)\s*万?元/i);
     if (m) {
         kpi.card_installment_calls = parseInt2(m[1]);
         kpi.card_installment_amount = parseNumber(m[2]);
@@ -422,6 +413,10 @@ function parseBranchReport(text) {
     m = text.match(/聚合码商户进件[ \t]*(\d+|x)[ \t]*户?/i);
     if (m) kpi.juhe_merchant = parseInt2(m[1]);
 
+    // 小蓝环存量激活
+    m = text.match(/(?:存量)?小蓝环(?:商户)?(?:布放)?激活[ \t]*(\d+|x)[ \t]*户?/i);
+    if (m) kpi.xiaolanhuan_activate = parseInt2(m[1]);
+
     // 小蓝环新增
     m = text.match(/小蓝环新增[ \t]*(\d+|x)[ \t]*户?/i);
     if (m) kpi.xiaolanhuan_new = parseInt2(m[1]);
@@ -439,20 +434,18 @@ function parseBranchReport(text) {
     if (m) kpi.webank_follow = parseInt2(m[1]);
 
     // 定期存款 + 行外定期新增
-    m = text.match(/定期存款[ \t]*([\d.\-－—]+|x)[ \t]*万元?[，,]?[ \t]*其中[：:]?[ \t]*行外定期新增合计[ \t]*([\d.]+|x)[ \t]*万?/i);
+    m = text.match(/定期存款[：: ][ \t]*([\d.\-－—]+|x)[ \t]*万元?[，,（(]?[ \t]*(?:不含外币[），)]?[ \t]*[，,]?[ \t]*)?其中[：:]?[ \t]*(?:行外(?:定期新增合计|吸[进金]))[ \t]*([\d.\-－—]+|x)[ \t]*万/i);
     if (m) {
         kpi.fixed_deposit = parseNumber(m[1]);
         kpi.external_deposit = parseNumber(m[2]);
     } else {
-        m = text.match(/定期存款[：:][ \t]*([\d.\-－—]+|x)[ \t]*万元?[，,]?[ \t]*其中行外吸[进金][ \t]*([\d.]+|x)[ \t]*万元?/i);
-        if (m) {
-            kpi.fixed_deposit = parseNumber(m[1]);
-            kpi.external_deposit = parseNumber(m[2]);
-        } else {
-            m = text.match(/定期存款[：:]?[ \t]*([\d.\-－—]+|x)[ \t]*万元?/i);
-            if (m) kpi.fixed_deposit = parseNumber(m[1]);
-        }
+        m = text.match(/定期存款[：:]?[ \t]*([\d.\-－—]+|x)[ \t]*万元?/i);
+        if (m) kpi.fixed_deposit = parseNumber(m[1]);
     }
+
+    // 美元定期
+    m = text.match(/美元定期[ \t]*([\d.]+|x)[ \t]*万?美元/i);
+    if (m) kpi.usd_deposit = parseNumber(m[1]);
 
     // 期交
     m = text.match(/期交[ \t]*([\d.]+|x)[ \t]*万元?/i);
@@ -463,26 +456,28 @@ function parseBranchReport(text) {
     if (m) kpi.insurance_single = parseNumber(m[1]);
 
     // 代销贵金属
-    m = text.match(/代销[ \t]*([\d.]+|x)[ \t]*万元?/i);
+    m = text.match(/代销[ \t]*[：:]?[ \t]*([\d.]+|x)[ \t]*万元?/i);
     if (m) kpi.gold_consignment = parseNumber(m[1]);
 
-    // 自营销售（克）
-    m = text.match(/自营销售[：:]?[ \t]*([\d.]+|x)[ \t]*克?/i);
+    // 自营黄金（克）
+    m = text.match(/自营(?:存金通\d*号\/?)?(?:自营)?黄金[ \t]*[：:]?[ \t]*([\d.]+|x)[ \t]*克?/i);
     if (m) {
         kpi.gold_self = parseNumber(m[1]);
     } else {
-        m = text.match(/自营(?:存金通\d*号\/?)?(?:自营)?黄金[ \t]*([\d.]+|x)[ \t]*克?/i);
-        if (m) {
-            kpi.gold_self = parseNumber(m[1]);
-        } else {
-            m = text.match(/自营存金通\d*号[ \t]*([\d.]+|x)[ \t]*克?/i);
-            if (m) kpi.gold_self = parseNumber(m[1]);
-        }
+        m = text.match(/自营存金通\d*号[ \t]*([\d.]+|x)[ \t]*克?/i);
+        if (m) kpi.gold_self = parseNumber(m[1]);
     }
 
+    // 自营白银
+    m = text.match(/自营白银[ \t]*[：:]?[ \t]*([\d.]+|x)[ \t]*克?/i);
+    if (m) kpi.silver_self = parseNumber(m[1]);
+
     // 存金通新签约
-    m = text.match(/存金通新签约[：:]?[ \t]*(\d+|x)[ \t]*户?/i);
-    if (m) kpi.cunjintong_new = parseInt2(m[1]);
+    m = text.match(/存金通新签约[ \t]*[：:]?[ \t]*(\d+|x)[ \t]*户?/i);
+    if (m) kpi.cunjintong_signup = parseInt2(m[1]);
+    // 存金通金额
+    m = text.match(/存金通.*?([\d.]+|x)[ \t]*万/i);
+    if (m) kpi.cunjintong_amount = parseNumber(m[1]);
 
     // 快e宝2号新开
     m = text.match(/快e宝2号?新开(?:客?户数?)?[ \t]*[：:]?[ \t]*(\d+|x)[ \t]*户?/i);
@@ -501,8 +496,8 @@ function parseBranchReport(text) {
     if (m) kpi.wealth_elder = parseNumber(m[1]);
 
     // 时时付/天天利销售
-    m = text.match(/时时付[\/／]?天天利销售[：:]?[ \t]*([\d.]+|x)[ \t]*万元?/i);
-    if (m) kpi.wealth_shishifu = parseNumber(m[1]);
+    m = text.match(/(?:时时付|天天利)(?:[\/／](?:时时付|天天利))?(?:销售)?[：:]?[ \t]*([\d.]+|x)[ \t]*万元?/i);
+    if (m) kpi.wealth_daily = parseNumber(m[1]);
 
     // 其他农银或法巴销售（不跨行匹配，避免匹配到下一行序号）
     m = text.match(/其他农银或法巴销售[：:]?[ \t]*([\d.]+|x)[ \t]*万/i);
@@ -521,7 +516,7 @@ function parseBranchReport(text) {
     if (m) kpi.pension_amount = parseNumber(m[1]);
 
     // 社保卡（排除"电子社保卡"）
-    m = text.match(/社保卡[ \t]*[：:]?[ \t]*(\d+|x)/i);
+    m = text.match(/社保卡[ \t]*[：:]?[ \t]*(\d+|x)[ \t]*[户张]?/i);
     if (m) {
         const idx = text.search(/社保卡[ \t]*[：:]?[ \t]*(\d+|x)/i);
         const prefix = text.slice(Math.max(0, idx - 2), idx);
@@ -531,11 +526,11 @@ function parseBranchReport(text) {
     }
 
     // 电子社保卡
-    m = text.match(/电子社保卡[：:]?[ \t]*(\d+|x)/i);
+    m = text.match(/电子社保卡[：:]?[ \t]*(\d+|x)[ \t]*[张户]?/i);
     if (m) kpi.e_social_security = parseInt2(m[1]);
 
     // 电子医保
-    m = text.match(/电子医保[：:]?[ \t]*(\d+|x)/i);
+    m = text.match(/电子医保[：:]?[ \t]*(\d+|x)[ \t]*[张户]?/i);
     if (m) kpi.e_medical = parseInt2(m[1]);
 
     // 三方绑卡
@@ -596,11 +591,12 @@ function aggregateKpis(kpis) {
     const fields = [
         'credit_card_submit', 'credit_card_bindactivate', 'card_installment_calls', 'card_installment_amount',
         'lefenyi_count', 'lefenyi_amount', 'car_installment_count', 'car_installment_amount',
-        'car_insurance_count', 'car_insurance_amount', 'juhe_merchant', 'xiaolanhuan_new',
+        'car_insurance_count', 'car_insurance_amount', 'juhe_merchant', 'xiaolanhuan_activate', 'xiaolanhuan_new',
         'mobile_bank_register', 'huishike', 'webank_follow',
-        'fixed_deposit', 'external_deposit', 'insurance_periodic', 'insurance_single',
-        'gold_consignment', 'gold_self', 'cunjintong_new', 'kuaibao_new', 'fund_sales',
-        'wealth_elder', 'wealth_shishifu', 'wealth_other',
+        'fixed_deposit', 'external_deposit', 'usd_deposit', 'insurance_periodic', 'insurance_single',
+        'gold_consignment', 'gold_self', 'silver_self', 'cunjintong_signup', 'cunjintong_amount',
+        'kuaibao_new', 'fund_sales',
+        'wealth_elder', 'wealth_daily', 'wealth_other',
         'pension_account', 'pension_amount', 'social_security_card', 'e_social_security', 'e_medical',
         'bindcard_bindactivate', 'wecom_add'
     ];
@@ -624,43 +620,38 @@ function formatDate(d) {
 function generateSummary(kpi) {
     const ds = formatDate(kpi.date);
 
-    // 第一段：个金业绩汇总
-    const personal = `${kpi.branch}${ds}业绩汇总：
-1. 定期存款${fmt(kpi.fixed_deposit)}万元，其中：行外定期新增合计${fmt(kpi.external_deposit)}万
+    return `${kpi.branch}${ds}各网点业绩汇总
+一、信用卡业绩：
+${kpi.branch}${ds}，信用卡进件${fmt(kpi.credit_card_submit)}张，当日申激绑${fmt(kpi.credit_card_bindactivate)}户，卡分期外呼${fmt(kpi.card_installment_calls)}笔，金额${fmt(kpi.card_installment_amount)}元、乐分易成功${fmt(kpi.lefenyi_count)}笔，金额${fmt(kpi.lefenyi_amount)}万元、汽车分期办理${fmt(kpi.car_installment_count)}笔，金额${fmt(kpi.car_installment_amount)}万元；车险分期${fmt(kpi.car_insurance_count)}笔，金额${fmt(kpi.car_insurance_amount)}万元。聚合码商户进件${fmt(kpi.juhe_merchant)}户，存量小蓝环商户布放激活${fmt(kpi.xiaolanhuan_activate)}户，小蓝环新增${fmt(kpi.xiaolanhuan_new)}户。
+二、网金业绩：
+1.当日掌银注册${fmt(kpi.mobile_bank_register)}户。
+2.当日慧识客完成${fmt(kpi.huishike)}户。
+3.当日山西微银行关注${fmt(kpi.webank_follow)}户。
+三、个金业务
+1. 定期存款 ${fmt(kpi.fixed_deposit)}万元（不含外币），其中：行外定期新增合计${fmt(kpi.external_deposit)}万。💰美元定期${fmt(kpi.usd_deposit)}万美元。
 2. 代理保险：
-期交${fmt(kpi.insurance_periodic)}万元
-趸交${fmt(kpi.insurance_single)}万元
+   期交${fmt(kpi.insurance_periodic)}万元
+   趸交${fmt(kpi.insurance_single)}万元
 3. 贵金属：
-❶代销${fmt(kpi.gold_consignment)}万元
-❷自营销售：${fmt(kpi.gold_self)}克
-❸存金通新签约：${fmt(kpi.cunjintong_new)}户（目标每网点每日1户）
+   1️⃣ 代销: ${fmt(kpi.gold_consignment)}万元
+   2️⃣ 自营黄金: ${fmt(kpi.gold_self)}克
+   3️⃣ 自营白银: ${fmt(kpi.silver_self)}克
+❸ 存金通新签约：${fmt(kpi.cunjintong_signup)}户（目标每网点每日户）${fmt(kpi.cunjintong_amount)}万
 4. 基金
-❶快e宝2号新开户数：${fmt(kpi.kuaibao_new)}户
-❷重点基金销售${fmt(kpi.fund_sales)}万元
+   ❶ 快e宝2号新开户数：${fmt(kpi.kuaibao_new)}户
+   ❷ 重点基金销售 ：${fmt(kpi.fund_sales)}万元
 5. 理财
-❶长辈悦享销售 ${fmt(kpi.wealth_elder)}万元
-❷时时付/天天利销售：${fmt(kpi.wealth_shishifu)}万元
-❸其他农银或法巴销售：${fmt(kpi.wealth_other)}万
+   ❶ 长辈悦享销售 ${fmt(kpi.wealth_elder)}万元
+   ❷ 时时付/天天利销售:${fmt(kpi.wealth_daily)}万元
+   ❸ 其他农银或法巴销售：${fmt(kpi.wealth_other)}万
 6. 个人养老金
-❶开户数: ${fmt(kpi.pension_account)}
-❷缴存金额：${fmt(kpi.pension_amount)}
-7. 社保卡: ${fmt(kpi.social_security_card)}
-8. 电子社保卡：${fmt(kpi.e_social_security)}
-9. 电子医保：${fmt(kpi.e_medical)}
-10. 三方绑卡：${fmt(kpi.bindcard_bindactivate)}
-11. 企业微信添加: ${fmt(kpi.wecom_add)}`;
-
-    // 第二段：信用卡业绩
-    const credit = `${kpi.branch}${ds}业绩：
-信用卡进件${fmt(kpi.credit_card_submit)}张，当日申激绑${fmt(kpi.credit_card_bindactivate)}户，卡分期外呼${fmt(kpi.card_installment_calls)}笔，乐分易成功${fmt(kpi.lefenyi_count)}笔、金额${fmt(kpi.lefenyi_amount)}万元，汽车分期办理${fmt(kpi.car_installment_count)}笔、金额${fmt(kpi.car_installment_amount)}万元；车险分期${fmt(kpi.car_insurance_count)}笔、金额${fmt(kpi.car_insurance_amount)}万元。聚合码商户进件${fmt(kpi.juhe_merchant)}户，小蓝环新增${fmt(kpi.xiaolanhuan_new)}户`;
-
-    // 第三段：网金业绩
-    const netbank = `${kpi.branch}${ds}业绩：
-1. 当日掌银注册${fmt(kpi.mobile_bank_register)}户
-2. 当日慧识客完成${fmt(kpi.huishike)}户
-3. 当日山西微银行关注${fmt(kpi.webank_follow)}户`;
-
-    return { credit, netbank, personal };
+   ❶ 开户数: ${fmt(kpi.pension_account)}个
+   ❷ 缴存金额：${fmt(kpi.pension_amount)}元
+7. 社保卡: ${fmt(kpi.social_security_card)}张
+8. 电子社保卡：${fmt(kpi.e_social_security)}户
+9. 电子医保：${fmt(kpi.e_medical)}户
+10. 三方绑卡：${fmt(kpi.bindcard_bindactivate)}户
+11. 企业微信添加: ${fmt(kpi.wecom_add)}户`;
 }
 
 // ========== UI 逻辑 ==========
@@ -683,9 +674,7 @@ function parseAndShow() {
     aggregatedKpi = aggregateKpis(parsedBranches);
 
     const summary = generateSummary(aggregatedKpi);
-    document.getElementById('output1').textContent = summary.personal;
-    document.getElementById('output2').textContent = summary.credit;
-    document.getElementById('output3').textContent = summary.netbank;
+    document.getElementById('output1').textContent = summary;
 
     const dateStr = aggregatedKpi.date ?
         `${aggregatedKpi.date.getFullYear()}年${aggregatedKpi.date.getMonth()+1}月${aggregatedKpi.date.getDate()}日` : '';
@@ -711,24 +700,27 @@ function renderTable() {
         { name: '车险笔', cls: 'th-credit', field: 'car_insurance_count' },
         { name: '车险额', cls: 'th-credit', field: 'car_insurance_amount' },
         { name: '聚合码', cls: 'th-credit', field: 'juhe_merchant' },
-        { name: '小蓝环', cls: 'th-credit', field: 'xiaolanhuan_new' },
+        { name: '小蓝环激活', cls: 'th-credit', field: 'xiaolanhuan_activate' },
+        { name: '小蓝环新增', cls: 'th-credit', field: 'xiaolanhuan_new' },
         { name: '掌银', cls: 'th-net', field: 'mobile_bank_register' },
         { name: '慧识客', cls: 'th-net', field: 'huishike' },
         { name: '微银行', cls: 'th-net', field: 'webank_follow' },
         { name: '定期', cls: 'th-personal', field: 'fixed_deposit' },
         { name: '行外新增', cls: 'th-personal', field: 'external_deposit' },
+        { name: '美元定期', cls: 'th-personal', field: 'usd_deposit' },
         { name: '期交', cls: 'th-personal', field: 'insurance_periodic' },
         { name: '趸交', cls: 'th-personal', field: 'insurance_single' },
         { name: '代销', cls: 'th-personal', field: 'gold_consignment' },
-        { name: '自营克', cls: 'th-personal', field: 'gold_self' },
-        { name: '存金通', cls: 'th-personal', field: 'cunjintong_new' },
+        { name: '黄金克', cls: 'th-personal', field: 'gold_self' },
+        { name: '白银克', cls: 'th-personal', field: 'silver_self' },
+        { name: '存金通户', cls: 'th-personal', field: 'cunjintong_signup' },
         { name: '快e宝', cls: 'th-personal', field: 'kuaibao_new' },
         { name: '基金', cls: 'th-personal', field: 'fund_sales' },
         { name: '长辈悦享', cls: 'th-personal', field: 'wealth_elder' },
-        { name: '时时付', cls: 'th-personal', field: 'wealth_shishifu' },
-        { name: '农银法巴', cls: 'th-personal', field: 'wealth_other' },
-        { name: '养老开户', cls: 'th-personal', field: 'pension_account' },
-        { name: '养老缴存', cls: 'th-personal', field: 'pension_amount' },
+        { name: '时时付', cls: 'th-personal', field: 'wealth_daily' },
+        { name: '其他理财', cls: 'th-personal', field: 'wealth_other' },
+        { name: '养老金户', cls: 'th-personal', field: 'pension_account' },
+        { name: '养老金额', cls: 'th-personal', field: 'pension_amount' },
         { name: '社保卡', cls: 'th-personal', field: 'social_security_card' },
         { name: '电子社保', cls: 'th-personal', field: 'e_social_security' },
         { name: '电子医保', cls: 'th-personal', field: 'e_medical' },
@@ -838,27 +830,30 @@ function exportExcel() {
         { name: '车险分期笔数', field: 'car_insurance_count' },
         { name: '车险分期金额', field: 'car_insurance_amount' },
         { name: '聚合码商户', field: 'juhe_merchant' },
+        { name: '小蓝环激活', field: 'xiaolanhuan_activate' },
         { name: '小蓝环新增', field: 'xiaolanhuan_new' },
         { name: '掌银注册', field: 'mobile_bank_register' },
         { name: '慧识客', field: 'huishike' },
         { name: '微银行关注', field: 'webank_follow' },
-        { name: '定期存款', field: 'fixed_deposit' },
-        { name: '行外定期新增', field: 'external_deposit' },
-        { name: '期交', field: 'insurance_periodic' },
-        { name: '趸交', field: 'insurance_single' },
-        { name: '代销贵金属', field: 'gold_consignment' },
-        { name: '自营销售克', field: 'gold_self' },
-        { name: '存金通新签约', field: 'cunjintong_new' },
+        { name: '定期存款(万)', field: 'fixed_deposit' },
+        { name: '行外新增(万)', field: 'external_deposit' },
+        { name: '美元定期(万美元)', field: 'usd_deposit' },
+        { name: '期交(万)', field: 'insurance_periodic' },
+        { name: '趸交(万)', field: 'insurance_single' },
+        { name: '代销(万)', field: 'gold_consignment' },
+        { name: '自营黄金(克)', field: 'gold_self' },
+        { name: '自营白银(克)', field: 'silver_self' },
+        { name: '存金通(户)', field: 'cunjintong_signup' },
         { name: '快e宝新开', field: 'kuaibao_new' },
-        { name: '重点基金销售', field: 'fund_sales' },
-        { name: '长辈悦享', field: 'wealth_elder' },
-        { name: '时时付天天利', field: 'wealth_shishifu' },
-        { name: '农银法巴', field: 'wealth_other' },
+        { name: '重点基金销售(万)', field: 'fund_sales' },
+        { name: '长辈悦享(万)', field: 'wealth_elder' },
+        { name: '时时付天天利(万)', field: 'wealth_daily' },
+        { name: '其他农银法巴(万)', field: 'wealth_other' },
         { name: '养老金开户', field: 'pension_account' },
-        { name: '养老金缴存', field: 'pension_amount' },
-        { name: '社保卡', field: 'social_security_card' },
-        { name: '电子社保卡', field: 'e_social_security' },
-        { name: '电子医保', field: 'e_medical' },
+        { name: '养老金缴存(元)', field: 'pension_amount' },
+        { name: '社保卡(张)', field: 'social_security_card' },
+        { name: '电子社保卡(户)', field: 'e_social_security' },
+        { name: '电子医保(户)', field: 'e_medical' },
         { name: '三方绑卡', field: 'bindcard_bindactivate' },
         { name: '企业微信', field: 'wecom_add' }
     ];
